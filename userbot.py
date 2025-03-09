@@ -130,7 +130,7 @@ async def help_command(event):
     help_text += "⚡️ **.respond help** - Автоответчик\n"
     help_text += "⚡️ **.call** - Призывает первых 100 участников чата\n"
     help_text += "Автор: angel_xranytel\n"
-    help_text += "1.1.0v alpha\n"
+    help_text += "1.5.0v alpha\n"
     await event.edit(help_text)
 
 load_modules(client)
