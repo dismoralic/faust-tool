@@ -105,11 +105,11 @@ async def scan_numbers(event):
         if user.phone:
             phone_numbers[user.first_name or "Без имени"] = user.phone
     if phone_numbers:
-        result = "📞 Слитые номера:\n" + "\n".join(f"{name}: {phone}" for name, phone in phone_numbers.items())
+        result = "Слитые номера:\n" + "\n".join(f"{name}: {phone}" for name, phone in phone_numbers.items())
         await client.send_message("me", result)
-        await event.edit("✅ Слитые номера отправлены в избранное")
+        await event.edit("Слитые номера отправлены в избранное")
     else:
-        await event.edit("❌ В чате нет номеров")
+        await event.edit("В чате нет номеров")
 
 @client.on(events.NewMessage(pattern=r"\.help", outgoing=True))
 async def help_command(event):
@@ -129,8 +129,8 @@ async def help_command(event):
     help_text += "⚡️ **.dlmod** - Установка faust-модуля (ответом на сообщение)\n"
     help_text += "⚡️ **.respond help** - Автоответчик\n"
     help_text += "⚡️ **.call** - Призывает первых 100 участников чата\n"
-    help_text += "Автор: angel_xranytel\n"
-    help_text += "2.0.0v alpha\n"
+    help_text += "Автор: `angel_xranytel`\n"
+    help_text += "`2.0.0v alpha`\n"
     await event.edit(help_text)
 
 load_modules(client)
