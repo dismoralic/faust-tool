@@ -44,9 +44,9 @@ async def update(event):
     await event.edit("🔄 Обновляю faust tool...")
     process = subprocess.run(["git", "pull"], capture_output=True, text=True)   
     if "Already up to date." in process.stdout:
-        await event.edit("✅ У вас уже последняя версия faust tool!")
+        await event.edit("✅ У вас уже последняя версия faust-tool!")
     else:
-        await event.edit("✅ Обновление загружено! Перезапускаю...")
+        await event.edit("✅ Обновление загружено! Идет перезапуск...")
         os.execl(sys.executable, sys.executable, *sys.argv)
 
 @client.on(events.NewMessage(pattern=r"\.ping", outgoing=True))
@@ -101,7 +101,6 @@ from telethon import events
 async def help_command(event):
     help_text = "🛠 **Доступные команды faust tool:**\n"
     help_text += "⚡️ **.ping** - Проверка пинга\n"
-    help_text += "⚡️ **.start** - Проверка работы faust tool\n"
     help_text += "⚡️ **.uptime** - Время работы faust tool\n"
     help_text += "⚡️ **.info / .note** - Информация о пользователе (реплей, или без)\n"
     help_text += "⚡️ **.spam [кол-во] [текст]** - Спам\n"
@@ -117,7 +116,7 @@ async def help_command(event):
     help_text += "⚡️ **.update** - Полное обновление инструмента до последней версии\n\n"
     help_text += "Лишь только идущий осилит дорогу.. лишь тот, кто найдет в себе силу — шагнуть 🕊\n"
     help_text += "Автор: `angel_xranytel`\n"
-    help_text += "`2.0.4v alpha`\n\n"
+    help_text += "`2.0.5v alpha`\n\n"
     await event.edit(help_text)
 
 load_modules(client)
