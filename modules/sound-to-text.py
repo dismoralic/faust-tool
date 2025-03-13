@@ -19,4 +19,4 @@ def register(client):
                 await message.edit(f"- {response.text}")
                 break
         else:
-            await message.edit("Ошибка: VoicyBot не ответил.")
+            await message.edit("Ошибка: faust-tool не ответил.")
