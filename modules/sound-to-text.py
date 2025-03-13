@@ -6,7 +6,7 @@ from telethon import events
 from telethon.tl.types import MessageMediaDocument
 
 def register(client):
-    @client.on(events.NewMessage(pattern=".sound"))
+    @client.on(events.NewMessage(pattern="/stt"))
     async def speech_to_text(event):
         reply = await event.get_reply_message()
         if not reply or not reply.media:
@@ -27,3 +27,5 @@ def register(client):
         finally:
             os.remove(file_path)
             os.remove(audio_path)
+            await event.delete()
+
