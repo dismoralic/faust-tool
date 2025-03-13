@@ -1,29 +1,22 @@
-import os
 import asyncio
-import speech_recognition as sr
-from pydub import AudioSegment
 from telethon import events
-from telethon.tl.types import MessageMediaDocument
 
 def register(client):
     @client.on(events.NewMessage(pattern=".sound"))
-    async def speech_to_text(event):
+    async def send_to_voicy(event):
         reply = await event.get_reply_message()
         if not reply or not reply.media:
-            return await event.reply("Ответь на голосовое сообщение или кружок, чтобы распознать речь.")
-        
-        await event.edit("Обработка...")
-        file_path = await client.download_media(reply, "voice.ogg")
-        audio_path = "voice.wav"
-        
-        try:
-            AudioSegment.from_file(file_path).export(audio_path, format="wav")
-            recognizer = sr.Recognizer()
-            with sr.AudioFile(audio_path) as source:
-                audio = recognizer.record(source)
-                text = recognizer.recognize_google(audio)
-        except Exception as e:
-            await event.edit(f"Ошибка: {str(e)}")
-        finally:
-            os.remove(file_path)
-            os.remove(audio_path)
+            return await event.reply("Ответь на голосовое или видео, чтобы распознать речь.")
+
+        message = await event.reply("Обработка...")
+
+        # Пересылаем в @VoicyBot
+        await client.forward_messages("@VoicyBot", reply)
+
+        # Ждём ответа от VoicyBot
+        async for response in client.iter_messages("@VoicyBot", limit=5):
+            if response.reply_to and response.reply_to.reply_to_msg_id == reply.id:
+                await message.edit(f"- {response.text}")
+                break
+        else:
+            await message.edit("Ошибка: VoicyBot не ответил.")
