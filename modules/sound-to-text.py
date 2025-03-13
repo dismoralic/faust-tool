@@ -35,13 +35,14 @@ def register(client):
             os.remove(wav_path)
 
             if response.status_code != 200:
-                return await event.edit(f"Ошибка {response.status_code}: {response.text}")
+                return await event.edit(f"❌ Ошибка {response.status_code}: {response.text}")
 
-            response_text = response.text.strip()
-            texts = [json.loads(chunk)["text"] for chunk in response_text.split("\n") if chunk]
-            longest_text = max(texts, key=len) if texts else "Ничего не распознано."
+            valid_json_lines = [line for line in response.text.strip().split("\n") if line.strip().startswith("{")]
+            texts = [json.loads(line).get("text", "") for line in valid_json_lines if line]
+
+            longest_text = max(texts, key=len) if texts else "❌ Ничего не распознано."
 
         except Exception as e:
-            longest_text = f"Ошибка обработки: {str(e)}"
+            longest_text = f"❌ Ошибка обработки: {str(e)}"
 
         await event.edit(longest_text)
