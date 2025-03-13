@@ -4,7 +4,7 @@ import aiohttp
 from pydub import AudioSegment
 from telethon import events
 
-WIT_AI_TOKEN = "ТВОЙ_ТОКЕН"
+WIT_AI_TOKEN = "J2H26WNNL2SHNPN5YAIG3R3S6T34M62U"
 
 def register(client):
     @client.on(events.NewMessage(pattern=".sound"))
