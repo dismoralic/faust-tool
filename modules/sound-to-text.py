@@ -12,7 +12,7 @@ def register(client):
         if not reply or not reply.media:
             return await event.reply("Ответь на голосовое или видео, чтобы распознать речь.")
         
-        message = await event.reply("Обработка...")
+        await event.edit("Обработка...")
         file_path = await client.download_media(reply, "voice.ogg")
         audio_path = "voice.wav"
         
@@ -22,9 +22,9 @@ def register(client):
             with sr.AudioFile(audio_path) as source:
                 audio = recognizer.record(source)
                 text = recognizer.recognize_google(audio, language="ru-RU")
-            await message.edit(f"- {text}")
+            await event.edit(f"- {text}")
         except Exception as e:
-            await message.edit(f"Ошибка: {str(e)}")
+            await event.edit(f"Ошибка: {str(e)}")
         finally:
             os.remove(file_path)
             os.remove(audio_path)
