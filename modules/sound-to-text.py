@@ -6,12 +6,13 @@ from telethon import events
 from telethon.tl.types import MessageMediaDocument
 
 def register(client):
-    @client.on(events.NewMessage(pattern=".sound"))
+    @client.on(events.NewMessage(pattern="/stt"))
     async def speech_to_text(event):
         reply = await event.get_reply_message()
         if not reply or not reply.media:
             return await event.reply("Ответь на голосовое или видео, чтобы распознать речь.")
         
+        message = await event.reply("Обработка...")
         file_path = await client.download_media(reply, "voice.ogg")
         audio_path = "voice.wav"
         
@@ -21,11 +22,9 @@ def register(client):
             with sr.AudioFile(audio_path) as source:
                 audio = recognizer.record(source)
                 text = recognizer.recognize_google(audio, language="ru-RU")
-            await event.reply(f"Распознанный текст: {text}")
+            await message.edit(f"- {text}")
         except Exception as e:
-            await event.reply(f"Ошибка: {str(e)}")
+            await message.edit(f"Ошибка: {str(e)}")
         finally:
             os.remove(file_path)
             os.remove(audio_path)
-            await event.delete()
-
