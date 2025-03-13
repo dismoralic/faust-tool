@@ -116,7 +116,7 @@ async def help_command(event):
     help_text += "⚡️ **.update** - Полное обновление инструмента до последней версии\n\n"
     help_text += "Лишь только идущий осилит дорогу.. лишь тот, кто найдет в себе силу — шагнуть 🕊\n"
     help_text += "Creator: `angel_xranytel`\n"
-    help_text += "`2.0.6v alpha`\n\n"
+    help_text += "`2.1.0v alpha`\n\n"
     await event.edit(help_text)
 
 load_modules(client)
