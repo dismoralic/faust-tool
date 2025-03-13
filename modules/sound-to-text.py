@@ -10,7 +10,7 @@ def register(client):
     async def speech_to_text(event):
         reply = await event.get_reply_message()
         if not reply or not reply.media:
-            return await event.reply("Ответь на голосовое или видео, чтобы распознать речь.")
+            return await event.reply("Ответь на голосовое сообщение или кружок, чтобы распознать речь.")
         
         await event.edit("Обработка...")
         file_path = await client.download_media(reply, "voice.ogg")
@@ -21,10 +21,9 @@ def register(client):
             recognizer = sr.Recognizer()
             with sr.AudioFile(audio_path) as source:
                 audio = recognizer.record(source)
-                text = recognizer.recognize_google(audio, language="ru-RU")
-            await event.edit(f"- {text}")
+                text = recognizer.recognize_google(audio)
         except Exception as e:
-            await event.edit(f"Текст не распознан. Код ошибки: {str(e)}")
+            await event.edit(f"Ошибка: {str(e)}")
         finally:
             os.remove(file_path)
             os.remove(audio_path)
