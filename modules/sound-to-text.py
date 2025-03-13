@@ -1,7 +1,6 @@
 import os
 import requests
-import asyncio
-import speech_recognition as sr
+import json
 from pydub import AudioSegment
 from telethon import events
 
@@ -12,31 +11,31 @@ def register(client):
     async def speech_to_text(event):
         reply = await event.get_reply_message()
         if not reply or not reply.media:
-            return await event.reply("Ответь на голосовое или видео сообщение, чтобы распознать речь.")
+            return await event.reply("Ответь на голосовое или видео, чтобы распознать речь.")
 
-        message = await event.reply("Обработка...")
-        
-        file_path = await client.download_media(reply, "voice.ogg")
-        audio_path = "voice.wav"
+        message = await event.reply("⏳ Распознаю речь...")
+
+        file_path = await client.download_media(reply.media, "audio.ogg")
+
+        audio = AudioSegment.from_file(file_path, format="ogg")
+        wav_path = file_path.replace(".ogg", ".wav")
+        audio.export(wav_path, format="wav")
+
+        headers = {
+            "Authorization": f"Bearer {WIT_AI_TOKEN}",
+            "Content-Type": "audio/wav"
+        }
+
+        with open(wav_path, "rb") as audio_file:
+            response = requests.post("https://api.wit.ai/speech?v=20230201", headers=headers, data=audio_file)
+
+        os.remove(file_path)
+        os.remove(wav_path)
 
         try:
-            AudioSegment.from_file(file_path).export(audio_path, format="wav")
+            texts = [json.loads(chunk)["text"] for chunk in response.text.strip().split("\n") if chunk]
+            longest_text = max(texts, key=len) if texts else "Не удалось распознать речь."
+        except Exception:
+            longest_text = "Ошибка обработки ответа от Wit.ai."
 
-            with open(audio_path, "rb") as audio_file:
-                headers = {"Authorization": f"Bearer {WIT_AI_TOKEN}", "Content-Type": "audio/wav"}
-                response = requests.post("https://api.wit.ai/speech?v=20230228", headers=headers, data=audio_file)
-
-            if response.status_code == 200:
-                data = response.json()
-                text = data.get("text", "Не удалось распознать речь.")
-            else:
-                text = f"Ошибка: {response.text}"
-
-            await message.edit(f"🗣 {text}")
-
-        except Exception as e:
-            await message.edit(f"Ошибка: {str(e)}")
-
-        finally:
-            os.remove(file_path)
-            os.remove(audio_path)
+        await message.edit(longest_text)
