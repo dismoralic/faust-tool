@@ -24,7 +24,7 @@ def register(client):
                 text = recognizer.recognize_google(audio, language="ru-RU")
             await event.edit(f"- {text}")
         except Exception as e:
-            await event.edit(f"Ошибка: {str(e)}")
+            await event.edit(f"Текст не распознан. Код ошибки: {str(e)}")
         finally:
             os.remove(file_path)
             os.remove(audio_path)
