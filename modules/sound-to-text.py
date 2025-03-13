@@ -16,33 +16,26 @@ def register(client):
         await event.edit("⏳ Распознаю речь...")
 
         try:
-
             file_path = await client.download_media(reply.media, "audio.ogg")
-
             audio = AudioSegment.from_file(file_path, format="ogg")
             wav_path = file_path.replace(".ogg", ".wav")
-            audio.export(wav_path, format="wav", parameters=["-ac", "1", "-ar", "16000", "-sample_fmt", "s16"])
+            audio.set_frame_rate(16000).set_channels(1).export(wav_path, format="wav")
 
-            headers = {
-                "Authorization": f"Bearer {WIT_AI_TOKEN}",
-                "Content-Type": "audio/wav"
-            }
-
-            with open(wav_path, "rb") as audio_file:
-                response = requests.post("https://api.wit.ai/speech?v=20230201", headers=headers, data=audio_file)
+            headers = {"Authorization": f"Bearer {WIT_AI_TOKEN}", "Content-Type": "audio/wav"}
+            with open(wav_path, "rb") as f:
+                response = requests.post("https://api.wit.ai/speech?v=20230216", headers=headers, data=f)
 
             os.remove(file_path)
             os.remove(wav_path)
 
             if response.status_code != 200:
-                return await event.edit(f"❌ Ошибка {response.status_code}: {response.text}")
+                return await event.edit(f"❌ Ошибка: {response.status_code}\n{response.text}")
 
-            valid_json_lines = [line for line in response.text.strip().split("\n") if line.strip().startswith("{")]
-            texts = [json.loads(line).get("text", "") for line in valid_json_lines if line]
+            json_data = response.text.strip().split("\n")
+            texts = [json.loads(line).get("text", "") for line in json_data if line.strip()]
+            longest_text = max(texts, key=len, default="❌ Текст не распознан")
 
-            longest_text = max(texts, key=len) if texts else "❌ Ничего не распознано."
+            await event.edit(longest_text)
 
         except Exception as e:
-            longest_text = f"❌ Ошибка обработки: {str(e)}"
-
-        await event.edit(longest_text)
+            await event.edit(f"❌ Ошибка обработки: {str(e)}")
