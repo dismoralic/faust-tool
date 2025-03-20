@@ -5,3 +5,4 @@ googletrans
 SpeechRecognition
 pydub
 ffmpeg-python
+pytesseract pillow
